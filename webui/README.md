@@ -222,5 +222,5 @@ python3 -m pytest tests/ -v
 - 서버는 `127.0.0.1`, 이 Mac의 자체 LAN IP, Tailscale 대역만 허용한다. 같은 Wi‑Fi의 다른 기기는 앱 입구에서 `403`으로 차단된다. (결산 리포트 서빙 라우트도 동일하게 적용)
 - 결산 탭의 리포트는 `webui/report/<YYYY-MM>/`의 HTML이며, 월간 리포트 생성 지시서는 `webui/report/plan/MONTHLY-REPORT-INSTRUCTIONS.md`에 있다.
 - webui 기본 배경은 결산 리포트와 동일한 `#f5f4ed`로 통일되어 있다.
-- Chart.js는 CDN에서 로드한다. 오프라인 환경에서는 차트가 표시되지 않을 수 있다.
+- Chart.js·treemap 플러그인은 `static/vendor/`에 동봉되어 있어 **오프라인에서도 차트가 정상 표시**된다(CDN 의존 없음).
 - `run.bat`/`run.ps1`은 시세 갱신 실패를 무시하고 서버를 실행한다 (pricehist가 없어도 동작).
