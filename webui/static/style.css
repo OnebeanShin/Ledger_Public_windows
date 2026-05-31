@@ -1647,8 +1647,8 @@ body.is-column-resizing {
   /* 요약: 최근 거래 패널 숨김 */
   #summary-recent { display: none; }
 
-  /* 요약: 부채/부채비율/순자산 숫자 잘림 방지(글씨 축소) */
-  .summary-liability-value { font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  /* 요약: 자산구성 아래 부채/부채비율/순자산 strip 삭제 */
+  #summary-liability-strip { display: none; }
 
   /* 투자 보유자산: 가로 나열 → 카드 스택(라벨 ⟷ 값) */
   #holdings-table { min-width: 0; }
