@@ -1534,6 +1534,19 @@ body.is-column-resizing {
   margin: 0 0 10px;
 }
 
+/* 연도 선택: 탭 버튼 그룹 → 가로 스크롤 스트립(자체 행, 넘치면 좌우 스크롤) */
+#settlement-year-group {
+  flex: 1 1 100%;
+  min-width: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  padding-bottom: 2px;
+}
+#settlement-year-group::-webkit-scrollbar { height: 6px; }
+#settlement-year-group .filter-btn { flex: 0 0 auto; }
+
 .settlement-body {
   display: flex;
   gap: 20px;
@@ -1647,8 +1660,8 @@ body.is-column-resizing {
   /* 요약: 최근 거래 패널 숨김 */
   #summary-recent { display: none; }
 
-  /* 요약: 자산구성 아래 부채/부채비율/순자산 strip 삭제 */
-  #summary-liability-strip { display: none; }
+  /* 요약: 자산구성 아래 부채/부채비율/순자산 칸 삭제(숨김) */
+  .summary-liability-strip { display: none; }
 
   /* 투자 보유자산: 가로 나열 → 카드 스택(라벨 ⟷ 값) */
   #holdings-table { min-width: 0; }
