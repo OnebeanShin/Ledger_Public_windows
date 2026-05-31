@@ -35,7 +35,6 @@ run.bat
 | `LEDGER_FILE` | main.journal 경로 | `../main.journal` (상대 경로) |
 | `LEDGER_PRICES_FILE` | prices.journal 경로 | `LEDGER_FILE`과 같은 디렉토리 |
 | `LEDGER_SCRIPTS_DIR` | scripts/ 디렉토리 경로 | `LEDGER_FILE`과 같은 디렉토리 |
-| `LEDGER_BASE_CURRENCY` | 대시보드 기준 통화(요약·대차대조표·예금 집계) | `KRW` |
 
 ## 기능
 

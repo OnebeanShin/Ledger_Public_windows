@@ -14,7 +14,6 @@ from typing import Any
 
 _DEFAULT_JOURNAL = str(Path(__file__).resolve().parent.parent / "main.journal")
 JOURNAL_FILE = os.environ.get("LEDGER_FILE", _DEFAULT_JOURNAL)
-BASE_CURRENCY = os.environ.get("LEDGER_BASE_CURRENCY", "KRW")
 
 # ── Input validation ──────────────────────────────────────
 
@@ -234,7 +233,7 @@ def _sum_krw_amounts(amounts: list[dict]) -> float:
     return sum(
         amount.get("quantity", 0)
         for amount in amounts
-        if amount.get("commodity") == BASE_CURRENCY
+        if amount.get("commodity") == "KRW"
     )
 
 
@@ -247,7 +246,7 @@ def _merge_amount_totals(
 ) -> None:
     for amount in amounts:
         commodity = amount.get("commodity", "")
-        if not commodity or (skip_krw and commodity == BASE_CURRENCY):
+        if not commodity or (skip_krw and commodity == "KRW"):
             continue
         if commodity not in merged:
             merged[commodity] = 0
@@ -275,7 +274,7 @@ def _build_cumulative_snapshot(
     snapshot = [{
         "kind": "deposit",
         "label": "예금",
-        "commodity": BASE_CURRENCY,
+        "commodity": "KRW",
         "quantity": deposit_balance,
     }]
     seen = set()
@@ -464,7 +463,7 @@ def attach_deposit_balances(txns: list) -> list:
     holdings: dict[str, float] = {}
     if first_date:
         opening_balance = _sum_krw_amounts(
-            get_balance("assets:bank", convert_to=BASE_CURRENCY, end=first_date)["totals"]
+            get_balance("assets:bank", convert_to="KRW", end=first_date)["totals"]
         )
         holding_order, holdings = _opening_non_cash_holdings(first_date)
 
@@ -610,7 +609,7 @@ def get_income_statement(
     return _parse_compound_report(_run(args))
 
 
-def get_balance_sheet(convert_to: str = BASE_CURRENCY) -> dict:
+def get_balance_sheet(convert_to: str = "KRW") -> dict:
     args = ["balancesheet"]
     if convert_to:
         args += ["-X", convert_to]

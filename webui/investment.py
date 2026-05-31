@@ -86,7 +86,7 @@ def _get_raw_holdings() -> list[dict]:
             for amount in posting.get("pamount", []):
                 commodity = hledger_api._amount_commodity(amount)
                 quantity = hledger_api._amount_value(amount)
-                if commodity in (hledger_api.BASE_CURRENCY, "USD") or not quantity:
+                if commodity in ("KRW", "USD") or not quantity:
                     continue
                 cost_per_unit_usd = hledger_api._extract_cost_usd(amount)
                 total_cost_usd = (cost_per_unit_usd * quantity) if cost_per_unit_usd else 0.0
@@ -104,7 +104,7 @@ def _extract_running_holdings(running_total: list[dict]) -> dict[str, float]:
     holdings: dict[str, float] = {}
     for amount in running_total:
         commodity = amount.get("commodity")
-        if commodity in (hledger_api.BASE_CURRENCY, "USD", None):
+        if commodity in ("KRW", "USD", None):
             continue
         quantity = amount.get("quantity", 0.0)
         if quantity:
@@ -193,14 +193,14 @@ def calculate_portfolio() -> dict:
 
     cash_balance = 0
     try:
-        bs = hledger_api.get_balance_sheet(convert_to=hledger_api.BASE_CURRENCY)
+        bs = hledger_api.get_balance_sheet(convert_to="KRW")
         for sr in bs.get("subreports", []):
             if sr["name"] == "Assets":
                 for row in sr["rows"]:
                     acct = row["account"]
                     if any(k in acct for k in ("bank:", "cash", "savings")):
                         for a in row["total"]:
-                            if a["commodity"] == hledger_api.BASE_CURRENCY:
+                            if a["commodity"] == "KRW":
                                 cash_balance += a["quantity"]
     except Exception:
         pass

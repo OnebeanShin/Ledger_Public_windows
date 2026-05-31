@@ -109,7 +109,7 @@ def handle_generic_error(exc: Exception):
 def _sum_krw(amounts):
     total = 0
     for amount in amounts:
-        if amount.get("commodity") == hledger_api.BASE_CURRENCY:
+        if amount.get("commodity") == "KRW":
             total += amount.get("quantity", 0)
     return total
 
@@ -147,7 +147,7 @@ def api_summary():
     )
 
     summary_data = hledger_api.run_independent({
-        "balance_sheet": lambda: hledger_api.get_balance_sheet(convert_to=hledger_api.BASE_CURRENCY),
+        "balance_sheet": lambda: hledger_api.get_balance_sheet(convert_to="KRW"),
         "income_statement": lambda: hledger_api.get_income_statement(period="thismonth"),
         "recent_register": hledger_api.get_register,
         "portfolio": investment.calculate_portfolio,
@@ -156,11 +156,11 @@ def api_summary():
         ),
         "deposit_balance": lambda: hledger_api.get_balance(
             "assets:bank",
-            convert_to=hledger_api.BASE_CURRENCY,
+            convert_to="KRW",
         ),
         "previous_deposit_balance": lambda: hledger_api.get_balance(
             "assets:bank",
-            convert_to=hledger_api.BASE_CURRENCY,
+            convert_to="KRW",
             end=compare_date.isoformat(),
         ),
     })
@@ -187,7 +187,7 @@ def api_summary():
                 acct = row["account"]
                 if any(k in acct for k in ("bank:", "cash", "savings")):
                     for a in row["total"]:
-                        if a["commodity"] == hledger_api.BASE_CURRENCY:
+                        if a["commodity"] == "KRW":
                             cash_balance += a["quantity"]
 
     return jsonify({
@@ -241,14 +241,14 @@ def api_income_statement():
 
 @app.route("/api/balance-sheet")
 def api_balance_sheet():
-    return jsonify(hledger_api.get_balance_sheet(convert_to=hledger_api.BASE_CURRENCY))
+    return jsonify(hledger_api.get_balance_sheet(convert_to="KRW"))
 
 
 @app.route("/api/accounts")
 def api_accounts():
     accounts = hledger_api.get_accounts()
     balance = hledger_api.get_balance(tree=True)
-    balance_krw = hledger_api.get_balance(convert_to=hledger_api.BASE_CURRENCY, tree=True)
+    balance_krw = hledger_api.get_balance(convert_to="KRW", tree=True)
     return jsonify({
         "accounts": accounts,
         "balance": balance,
