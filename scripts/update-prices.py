@@ -8,7 +8,6 @@
 필요: hledger, pricehist (pip install pricehist).
 환경변수:
   LEDGER_FILE            main.journal 경로(기본: 이 스크립트 상위 폴더/main.journal)
-  LEDGER_BASE_CURRENCY   기준 통화(기본 KRW) — 환율 심볼 결정에 사용
   PRICEHIST_BIN          pricehist 실행파일 경로(직접 지정 시)
 """
 import os
@@ -22,7 +21,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 MAIN_FILE = os.environ.get("LEDGER_FILE", str(ROOT / "main.journal"))
 OUTPUT_FILE = ROOT / "prices.journal"
-BASE_CURRENCY = os.environ.get("LEDGER_BASE_CURRENCY", "KRW")
 
 _P_RE = re.compile(r"^P\s+(\S+)(?:\s+\S+)?\s+(\S+)\s+[\d.]+\s+(\S+)\s*$")
 
@@ -58,7 +56,7 @@ def detect_symbols():
                 continue
             for amount in posting.get("pamount", []):
                 c = amount.get("acommodity")
-                if c and c not in {BASE_CURRENCY, "USD"}:
+                if c and c not in {"KRW", "USD"}:
                     symbols.add(c)
     return sorted(symbols, key=lambda s: (s != "BTC", s))
 
@@ -104,12 +102,11 @@ def main():
         if line:
             new_lines.append(line)
 
-    # 환율(USD/기준통화) — 기준통화가 USD가 아니면 갱신
-    if BASE_CURRENCY != "USD":
-        fx = fetch_price(pricehist, f"{BASE_CURRENCY}=X", start, end,
-                         ["--fmt-base", "USD", "--fmt-quote", BASE_CURRENCY])
-        if fx:
-            new_lines.append(fx)
+    # 환율(USD/KRW)
+    fx = fetch_price(pricehist, "KRW=X", start, end,
+                     ["--fmt-base", "USD", "--fmt-quote", "KRW"])
+    if fx:
+        new_lines.append(fx)
 
     # 기존 P줄 + 신규 병합 → (날짜,심볼,통화) 키로 최신만, 정렬
     merged = {}
