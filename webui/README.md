@@ -35,6 +35,7 @@ run.bat
 | `LEDGER_FILE` | main.journal 경로 | `../main.journal` (상대 경로) |
 | `LEDGER_PRICES_FILE` | prices.journal 경로 | `LEDGER_FILE`과 같은 디렉토리 |
 | `LEDGER_SCRIPTS_DIR` | scripts/ 디렉토리 경로 | `LEDGER_FILE`과 같은 디렉토리 |
+| `LEDGER_BASE_CURRENCY` | 대시보드 기준 통화(요약·대차대조표·예금 집계) | `KRW` |
 
 ## 기능
 
@@ -120,6 +121,7 @@ hledger CLI → main.journal (+ prices.journal)
 
 - **hledger 캐시**: 저널 파일 mtime 기반 `lru_cache`. 파일이 변경되지 않으면 동일 쿼리를 subprocess 없이 즉시 반환한다.
 - **병렬 실행**: `/api/summary` 엔드포인트는 독립적인 hledger 호출 7건을 `ThreadPoolExecutor`로 동시 실행한다 (`run_independent`).
+- **응답 압축·정적 캐시**: 텍스트 응답(JSON/HTML 등)을 gzip 압축하고, 정적 자산에 `Cache-Control: max-age`를 부여한다(개발 모드 `FLASK_DEBUG=1`에선 캐시 끔, 리포트는 `no-cache`). 외부 패키지 없이 내장 모듈로 처리.
 
 ### 보안
 
