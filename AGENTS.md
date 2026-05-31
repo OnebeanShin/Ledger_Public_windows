@@ -16,7 +16,7 @@
 - 기준 통화: **KRW**(기본). 다른 통화 사용 시 거래·설정을 해당 통화로 바꾼다.
 - 상대 날짜("어제","지난주") 해석 기준 시간대: 시스템 로컬(예: Asia/Seoul).
 - 기본 시작 파일: `main.journal`.
-- 소비성 지출의 기본 결제수단: 사용자가 명시하지 않으면 `assets:bank:checking`에서 나간 것으로 본다.
+- 소비성 지출의 기본 결제수단: 사용자가 명시하지 않으면 `assets:bank:입출금`에서 나간 것으로 본다.
   현금/카드/다른 계좌를 명시하면 그 정보를 우선한다.
 
 ## 장부 구조
@@ -29,14 +29,14 @@ main.journal        ; 전체 시작 파일 (아래를 include)
 - 연도가 바뀌면 새 `YYYY.journal`을 만들고 `main.journal`에 `include` 한다.
 
 ## 계정 체계 (예시 — 자유롭게 확장)
-- `assets:bank:checking` (입출금), `assets:cash` (현금), `assets:savings` (예금)
-- `assets:investment:stock:<티커>` (주식), `assets:investment:btc` (암호화폐) 등
-- `liabilities:card:<카드사>` (신용카드), `liabilities:loan:<이름>` (대출)
-- `equity:opening` (기초 잔액)
-- `income:salary`(월급) `income:bonus` `income:interest` `income:misc`
-- `expenses:food:dining`(외식) `food:grocery`(식료품) · `transit`(교통) · `housing`(주거)
-  · `utilities`(공과금) · `medical`(의료) · `leisure`(여가) · `shopping`(쇼핑)
-  · `subscription`(구독) · `interest`(이자) 등
+- `assets:bank:입출금` (입출금), `assets:cash` (현금), `assets:bank:저축` (저축)
+- `assets:investment:stock:<티커>` (주식), `assets:investment:btc` (비트코인) 등
+- `liabilities:신용카드` (신용카드), `liabilities:loan:<이름>` (대출)
+- `equity:기초` (기초 잔액)
+- `income:월급` · `income:용돈` · `income:이자` · `income:기타`
+- `expenses:식비:밥` · `expenses:식비:카페` · `expenses:교통` · `expenses:주거`
+  · `expenses:주거:공과금` · `expenses:의료` · `expenses:여가` · `expenses:쇼핑`
+  · `expenses:구독` 등
 > 계정명은 한글/영문 모두 가능. 한 번 정한 표기를 일관되게 쓴다(혼용 금지).
 
 ## 기록 규칙
@@ -62,7 +62,7 @@ main.journal        ; 전체 시작 파일 (아래를 include)
 - 실행: `webui\run.bat` 더블클릭(Windows) → http://127.0.0.1:5001 (README 참고).
 
 ## 자연어 사용 예시
-- "어제 점심 9천 원 카드로 썼어" → `expenses:food:dining 9000 KRW` / `liabilities:card:...`(또는 기본 결제수단).
-- "25일에 월급 250만 원 들어왔어" → `income:salary` / `assets:bank:checking`.
+- "어제 점심 9천 원 카드로 썼어" → `expenses:식비:밥 9000 KRW` / `liabilities:신용카드`(또는 기본 결제수단).
+- "25일에 월급 250만 원 들어왔어" → `income:월급` / `assets:bank:입출금`.
 - "애플 주식 3주 주당 190달러에 샀어" → `assets:investment:stock:AAPL AAPL 3 {USD 190.00}` / 결제 계정.
 > 기록 후 항상 복식부기 검증을 거치고, 어떤 계정으로 분류했는지 사용자에게 알린다.

@@ -416,6 +416,32 @@ function renderTransactions(txns) {
       <td class="right mono" style="color:var(--text-secondary)">${rawMode && !t.is_first ? '' : fmtCumulative(t.cumulative)}</td>
     </tr>
   `).join('');
+  renderMobileTransactions(filtered, rawMode);
+}
+
+// 모바일 카드형 거래 목록: 날짜 구분선 + 금액(첫 줄) + 설명·계정(작은 둘째 줄). 누적은 생략.
+function renderMobileTransactions(filtered, rawMode) {
+  const list = document.getElementById('txn-mobile-list');
+  if (!list) return;
+  let html = '';
+  let lastDate = null;
+  for (const t of filtered) {
+    const isCont = rawMode && !t.is_first;
+    if (!isCont && t.date !== lastDate) {
+      html += `<div class="txn-mday">${escapeHtml(t.date)}</div>`;
+      lastDate = t.date;
+    }
+    const acct = escapeHtml(t.account || '');
+    const desc = isCont ? '' : escapeHtml(t.description || '');
+    const sub = desc
+      ? `${desc} · <span class="txn-macct">${acct}</span>`
+      : `<span class="txn-macct">${acct}</span>`;
+    html += `<div class="txn-mrow">`
+      + `<div class="txn-mamt mono ${pnlClass(t.amounts[0]?.quantity)}">${fmtAmount(t.amounts)}</div>`
+      + `<div class="txn-msub">${sub}</div>`
+      + `</div>`;
+  }
+  list.innerHTML = html;
 }
 
 function populateAccountFilter(txns) {

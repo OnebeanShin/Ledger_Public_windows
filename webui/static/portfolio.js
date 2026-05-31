@@ -84,14 +84,14 @@ export async function loadPortfolio() {
   const tbody = document.querySelector('#holdings-table tbody');
   tbody.innerHTML = h.map(item => `
     <tr>
-      <td><strong>${item.symbol}</strong> <span style="color:var(--text-muted);font-size:11px;">${item.label}</span></td>
-      <td class="right mono">${fmtQty(item.quantity, item.symbol)}</td>
-      <td class="right mono">${fmtUSD(item.cost_per_unit_usd)}</td>
-      <td class="right mono">${fmtUSD(item.current_price_usd)}</td>
-      <td class="right mono">${fmtKRW(item.cost_total_krw)}</td>
-      <td class="right mono">${fmtKRW(item.market_total_krw)}</td>
-      <td class="right mono ${pnlClass(item.pnl_krw)}">${fmtKRWCompact(item.pnl_krw)}</td>
-      <td class="right"><span class="badge ${item.return_pct >= 0 ? 'badge-green' : 'badge-red'}">${fmtPct(item.return_pct)}</span></td>
+      <td data-label="자산"><strong>${item.symbol}</strong> <span style="color:var(--text-muted);font-size:11px;">${item.label}</span></td>
+      <td class="right mono" data-label="수량">${fmtQty(item.quantity, item.symbol)}</td>
+      <td class="right mono" data-label="취득단가">${fmtUSD(item.cost_per_unit_usd)}</td>
+      <td class="right mono" data-label="현재가">${fmtUSD(item.current_price_usd)}</td>
+      <td class="right mono" data-label="취득원가">${fmtKRW(item.cost_total_krw)}</td>
+      <td class="right mono" data-label="평가액">${fmtKRW(item.market_total_krw)}</td>
+      <td class="right mono ${pnlClass(item.pnl_krw)}" data-label="손익">${fmtKRWCompact(item.pnl_krw)}</td>
+      <td class="right" data-label="수익률"><span class="badge ${item.return_pct >= 0 ? 'badge-green' : 'badge-red'}">${fmtPct(item.return_pct)}</span></td>
     </tr>
   `).join('');
 
