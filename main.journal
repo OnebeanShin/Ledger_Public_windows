@@ -1,0 +1,9 @@
+; Default entrypoint: all data in one ledger, organized by year.
+; Examples:
+;   hledger -f main.journal balance
+;   hledger -f main.journal register expenses
+;   hledger -f main.journal incomestatement
+;   hledger-web -f main.journal
+
+include 2026.journal
+include prices.journal

@@ -1,0 +1,28 @@
+; 2026년 거래 파일 (예시 데이터) — 본인 데이터로 교체하세요.
+; 계정 분류·기록 규칙은 AGENTS.md 참고. 기준 통화는 KRW(변경 가능).
+; 숫자는 천단위 콤마 없이 적습니다. (예: 1000000 KRW)
+
+; ── 기초 잔액 (가계부 시작 시점의 자산/부채) ──
+2026-01-01 기초 잔액
+    assets:bank:checking      1000000 KRW
+    assets:cash                 50000 KRW
+    equity:opening
+
+; ── 수입 예시 ──
+2026-01-25 월급
+    assets:bank:checking      2500000 KRW
+    income:salary
+
+; ── 지출 예시 ──
+2026-01-26 점심
+    expenses:food:dining         9000 KRW
+    assets:bank:checking
+
+2026-01-27 지하철
+    expenses:transit             1400 KRW
+    assets:cash
+
+; ── 투자 예시(선택) — 매수 단가를 {} 로 기록하면 평가/시세 연동 가능 ──
+; 2026-02-01 주식 매수
+;     assets:investment:stock:AAPL    AAPL 3 {USD 190.00}
+;     assets:bank:checking

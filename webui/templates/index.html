@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>가계부</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/static/favicon-192x192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+  <meta name="theme-color" content="#1a1a1a">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/vendor/chart.umd.min.js" defer></script>
+  <script src="/static/vendor/chartjs-chart-treemap.umd.min.js" defer></script>
+</head>
+<body>
+  <div class="header">
+    <h1>가계부</h1>
+    <span class="header-meta" id="header-meta"></span>
+  </div>
+
+  <nav class="tab-bar" role="tablist" aria-label="주요 보기">
+    <button class="tab-btn active" data-tab="summary" role="tab" aria-controls="tab-summary">요약</button>
+    <button class="tab-btn" data-tab="transactions" role="tab" aria-controls="tab-transactions">거래</button>
+    <button class="tab-btn" data-tab="reports" role="tab" aria-controls="tab-reports">분석</button>
+    <button class="tab-btn" data-tab="settlement" role="tab" aria-controls="tab-settlement">결산</button>
+    <button class="tab-btn" data-tab="portfolio" role="tab" aria-controls="tab-portfolio">투자</button>
+  </nav>
+
+  <!-- ═══ 요약 ═══ -->
+  <div class="tab-content active" id="tab-summary" role="tabpanel">
+    <div class="cards" id="summary-cards"></div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title" id="summary-revenue-title">수입 내역</div>
+        <div id="summary-revenue-breakdown"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title" id="summary-expense-title">지출 내역</div>
+        <div id="summary-expense-breakdown"></div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title panel-title-inline">
+          <span>자산 구성</span>
+          <span class="panel-title-side" id="summary-asset-total-inline"></span>
+        </div>
+        <div class="chart-container summary-asset-chart"><canvas id="chart-asset-alloc"></canvas></div>
+        <div id="asset-alloc-legend"></div>
+        <div class="summary-liability-strip" id="summary-liability-strip"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">최근 거래</div>
+        <table class="data-table" id="recent-txns">
+          <thead><tr><th>날짜</th><th>설명</th><th>계정</th><th class="right">금액</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 거래 ═══ -->
+  <div class="tab-content" id="tab-transactions" role="tabpanel">
+    <div class="filters">
+      <div class="filter-group" id="txn-period-group">
+        <button class="filter-btn active" data-period="">전체</button>
+        <button class="filter-btn" data-period="thismonth">이번 달</button>
+        <button class="filter-btn" data-period="lastmonth">지난 달</button>
+        <button class="filter-btn" data-period="thisyear">올해</button>
+      </div>
+      <select class="filter-select" id="txn-account-filter">
+        <option value="">모든 계정</option>
+      </select>
+      <input class="filter-input" id="txn-search" placeholder="검색...">
+      <label class="txn-view-toggle" for="txn-double-entry-toggle">
+        <span class="txn-view-label">복식부기</span>
+        <span class="toggle-switch">
+          <input type="checkbox" id="txn-double-entry-toggle">
+          <span class="toggle-slider"></span>
+        </span>
+      </label>
+    </div>
+    <div class="panel">
+      <table class="data-table" id="txn-table">
+        <thead><tr><th>날짜</th><th>설명</th><th>계정</th><th class="right">금액</th><th class="right">누적</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ 보고서 ═══ -->
+  <div class="tab-content" id="tab-reports" role="tabpanel">
+    <div class="sub-tabs" role="tablist" aria-label="보고서 보기">
+      <button class="sub-tab-btn active" data-sub="expense" role="tab" aria-controls="sub-expense">지출 분석</button>
+      <button class="sub-tab-btn" data-sub="is" role="tab" aria-controls="sub-is">손익계산서</button>
+      <button class="sub-tab-btn" data-sub="bs" role="tab" aria-controls="sub-bs">대차대조표</button>
+      <button class="sub-tab-btn" data-sub="accounts" role="tab" aria-controls="sub-accounts">계정</button>
+    </div>
+
+    <div class="sub-content active" id="sub-expense" role="tabpanel">
+      <div class="filters">
+        <div class="filter-group" id="exp-period-group">
+          <button class="filter-btn active" data-period="thismonth">이번 달</button>
+          <button class="filter-btn" data-period="lastmonth">지난 달</button>
+        </div>
+        <select class="filter-select" id="exp-month-select">
+          <option value="">월별 선택</option>
+        </select>
+        <select class="filter-select" id="exp-year-select">
+          <option value="">연별 선택</option>
+        </select>
+          <div class="filter-group" id="exp-view-group" style="margin-left:auto; font-size:12px;">
+            <span class="filter-btn active" data-view="treemap">트리맵</span>
+            <span class="filter-btn" data-view="bar">막대그래프</span>
+          </div>
+      </div>
+      <div class="grid-2 expense-analysis-grid expense-analysis-grid--treemap" id="expense-analysis-grid">
+        <div class="panel expense-analysis-panel">
+          <div class="panel-title">카테고리별 비율</div>
+          <div id="expense-view-bar" style="display:none;">
+            <div class="chart-container" style="height:300px;"><canvas id="chart-expense-bar"></canvas></div>
+            <div id="expense-subbar-wrap" style="display:none; margin-top:16px;">
+              <h4 style="color:var(--text-secondary);margin-bottom:12px;font-size:13px;" id="expense-subbar-title">하위 카테고리 지출</h4>
+              <div class="chart-container" style="height:250px;"><canvas id="chart-expense-subbar"></canvas></div>
+            </div>
+          </div>
+          <div id="expense-view-treemap" style="display:flex;">
+            <div class="chart-container expense-treemap-chart"><canvas id="chart-expense-treemap"></canvas></div>
+          </div>
+        </div>
+        <div class="panel expense-analysis-panel">
+          <div class="panel-title" id="exp-trend-title">일별 지출 추이</div>
+          <div class="expense-trend-stack" id="expense-trend-stack">
+            <div class="chart-container expense-trend-chart"><canvas id="chart-expense-daily"></canvas></div>
+            <div id="exp-yearly-trend-wrap" class="expense-yearly-trend-wrap" style="display: none;">
+              <div class="panel-title" id="exp-yearly-trend-title">연간 월별 지출 추이</div>
+              <div class="chart-container expense-trend-chart"><canvas id="chart-expense-yearly"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-content" id="sub-is" role="tabpanel">
+      <div class="filters">
+        <div class="filter-group" id="is-period-group">
+          <button class="filter-btn active" data-period="thismonth">이번 달</button>
+          <button class="filter-btn" data-period="lastmonth">지난 달</button>
+        </div>
+        <select class="filter-select" id="is-month-select">
+          <option value="">월별 선택</option>
+        </select>
+        <select class="filter-select" id="is-year-select">
+          <option value="">연별 선택</option>
+        </select>
+      </div>
+      <div class="panel" id="is-table-panel" style="margin-top:16px; width:50%;">
+        <div class="panel-title">수입 / 지출</div>
+        <div id="is-content"></div>
+      </div>
+    </div>
+
+    <div class="sub-content" id="sub-bs" role="tabpanel">
+      <div class="panel" id="bs-panel">
+        <div class="panel-title">대차대조표 (기준통화 환산)</div>
+        <div id="bs-content"></div>
+      </div>
+    </div>
+
+    <div class="sub-content" id="sub-accounts" role="tabpanel">
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-title">계정 트리</div>
+          <div id="account-tree-container"></div>
+        </div>
+        <div class="panel" id="account-detail-panel" style="display:none;">
+          <div class="panel-title" id="account-detail-title">계정 상세</div>
+          <table class="data-table" id="account-detail-table">
+            <thead><tr><th>날짜</th><th>설명</th><th class="right">금액</th><th class="right">누적</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 투자 ═══ -->
+  <div class="tab-content" id="tab-portfolio" role="tabpanel">
+    <div class="cards" id="portfolio-cards"></div>
+    <div class="panel">
+      <div class="panel-title">보유 자산</div>
+      <table class="data-table" id="holdings-table">
+        <thead><tr>
+          <th>자산</th><th class="right">수량</th><th class="right">취득단가</th>
+          <th class="right">현재가</th><th class="right">취득원가(₩)</th>
+          <th class="right">평가액(₩)</th><th class="right">손익(₩)</th><th class="right">수익률</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title panel-title-inline">
+          <span>자산 배분</span>
+          <span class="panel-title-side" id="portfolio-alloc-total-inline"></span>
+        </div>
+        <div class="chart-container"><canvas id="chart-portfolio-alloc"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">시세 추이</div>
+        <div class="filters" style="margin-bottom:12px;">
+          <select class="filter-select" id="price-chart-symbol">
+            <option value="TOTAL">전체평가액</option>
+          </select>
+        </div>
+        <div class="chart-container"><canvas id="chart-price-history"></canvas></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="price-panel-header">
+        <div class="price-panel-title-row">
+          <div class="panel-title price-panel-title">최신 시세</div>
+          <span class="price-updated-at" id="price-updated-at"></span>
+        </div>
+        <button class="btn" id="btn-update-prices">시세 갱신</button>
+      </div>
+      <div class="price-grid" id="price-grid"></div>
+    </div>
+  </div>
+
+  <!-- ═══ 결산 ═══ -->
+  <div class="tab-content" id="tab-settlement" role="tabpanel" hidden>
+    <div class="settlement-bar filters">
+      <div class="filter-group" id="settlement-year-group" aria-label="연도 선택"></div>
+      <div class="filter-group" id="settlement-month-group" aria-label="월 선택"></div>
+    </div>
+    <div class="settlement-body">
+      <div class="settlement-viewer">
+        <div class="settlement-empty" id="settlement-empty" hidden>표시할 결산 리포트가 없습니다.</div>
+        <iframe id="settlement-frame" class="settlement-frame" title="결산 리포트"></iframe>
+      </div>
+      <aside class="settlement-toc" id="settlement-toc" aria-label="목차"></aside>
+    </div>
+  </div>
+
+  <!-- ═══ Account detail modal ═══ -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title"></h3>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <table class="data-table" id="modal-table">
+        <thead><tr><th>날짜</th><th>설명</th><th class="right">금액</th><th class="right">누적</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="module" src="/static/main.js"></script>
+
+  <!-- Toast notification container -->
+  <div id="toast-container" aria-live="polite" aria-atomic="false"></div>
+</body>
+</html>
