@@ -167,11 +167,12 @@ kami `long-doc-ko` 템플릿 위에 아래 순서로 구성한다. 각 섹션의
 
 ## 6. kami 디자인 적용
 
-kami 스킬을 사용한다.
+kami 스킬 위치: `/Users/a1234/.cli-jaw-3463/skills/kami`
 스킬이 없으면 https://github.com/tw93/kami 에서 다운받아서 설치한다.
 
 1. **베이스 템플릿 복사**: `assets/templates/long-doc-ko.html` 를 출력 위치로 복사 후 `{{placeholder}}` 를 채운다.
-   - 채울 주요 placeholder: `{{문서 제목}}`, `{{작성자}}`, `{{요약}}`, `{{키워드}}`, cover/eyebrow/title/sub, 각 챕터 본문·표·callout.
+   - 채울 주요 placeholder: `{{문서 제목}}`, `{{작성자}}`, `{{요약}}`, `{{키워드}}`, cover/eyebrow/title, 각 챕터 본문·표·callout.
+   - cover 영역에는 별도 부제목(`sub`) 줄을 넣지 않는다.
 2. **디자인 토큰** (`references/design.md`, `references/tokens.json` 준수):
    - 캔버스 parchment `#f5f4ed` (순백 금지), accent ink-blue `#1B365D` **단일**.
    - 중성색은 따뜻한 톤만(쿨 그레이 금지), serif 위계(본문 400 / 제목 500), 하드 섀도 금지.
